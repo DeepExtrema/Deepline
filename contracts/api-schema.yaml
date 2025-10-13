@@ -1,0 +1,1012 @@
+openapi: 3.0.3
+info:
+  title: Deepline Multi-Agent Data Scientist API
+  description: |
+    Comprehensive API schema for the Deepline Master Orchestrator and its microservice agents.
+    Includes EDA Agent, Refinery Agent, ML Agent, and Master Orchestrator endpoints.
+  version: 1.0.0
+  contact:
+    name: Deepline Team
+  license:
+    name: BUSL-1.1
+
+servers:
+  - url: http://localhost:8000
+    description: Master Orchestrator (default)
+  - url: http://localhost:8001
+    description: EDA Agent
+  - url: http://localhost:8005
+    description: Refinery Agent
+  - url: http://localhost:8002
+    description: ML Agent
+
+tags:
+  - name: orchestrator
+    description: Master orchestrator workflow management
+  - name: eda
+    description: Exploratory Data Analysis operations
+  - name: refinery
+    description: Data quality and feature engineering
+  - name: ml
+    description: Machine learning training and experiments
+  - name: health
+    description: Health check endpoints
+
+paths:
+  # Master Orchestrator Endpoints
+  /:
+    get:
+      tags: [orchestrator]
+      summary: Root endpoint
+      description: Returns API information and status
+      responses:
+        '200':
+          description: API information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  version:
+                    type: string
+
+  /health:
+    get:
+      tags: [health]
+      summary: Health check endpoint
+      description: Returns health status of the service
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /datasets/upload:
+    post:
+      tags: [orchestrator]
+      summary: Upload dataset
+      description: Upload a dataset file for analysis
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - name
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Dataset file (CSV, XLSX, JSON)
+                name:
+                  type: string
+                  description: Name for the dataset
+                license:
+                  type: string
+                  description: Optional license information
+                uploader:
+                  type: string
+                  description: Optional uploader identifier
+      responses:
+        '200':
+          description: Dataset uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataset_name:
+                    type: string
+                  filename:
+                    type: string
+                  snapshot:
+                    type: object
+                  pii_detected:
+                    type: boolean
+                  pii_matches_count:
+                    type: integer
+                  message:
+                    type: string
+
+  /datasets:
+    get:
+      tags: [orchestrator]
+      summary: List datasets
+      description: Get a list of all loaded datasets
+      responses:
+        '200':
+          description: List of datasets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  datasets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Dataset'
+
+  /workflows/start:
+    post:
+      tags: [orchestrator]
+      summary: Start a workflow
+      description: Start a new workflow with specified tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowRequest'
+      responses:
+        '200':
+          description: Workflow started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowResponse'
+
+  /runs:
+    get:
+      tags: [orchestrator]
+      summary: List all workflow runs
+      description: Get a list of all workflow runs
+      responses:
+        '200':
+          description: List of runs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  runs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RunStatus'
+
+  /runs/{run_id}/status:
+    get:
+      tags: [orchestrator]
+      summary: Get run status
+      description: Get the status of a specific workflow run
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Run status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunStatus'
+
+  /runs/{run_id}/artifacts:
+    get:
+      tags: [orchestrator]
+      summary: List run artifacts
+      description: Get all artifacts for a specific run
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of artifacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Artifact'
+
+  /artifacts/{run_id}/{filename}:
+    get:
+      tags: [orchestrator]
+      summary: Download artifact
+      description: Download a specific artifact file
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: filename
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Artifact file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  /runs/{run_id}:
+    delete:
+      tags: [orchestrator]
+      summary: Delete workflow run
+      description: Delete a workflow run and its artifacts
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Run deleted successfully
+
+  # EDA Agent Endpoints
+  /load_data:
+    post:
+      tags: [eda]
+      summary: Load dataset
+      description: Load a dataset from file into memory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadDataRequest'
+      responses:
+        '200':
+          description: Dataset loaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoadDataResponse'
+
+  /basic_info:
+    post:
+      tags: [eda]
+      summary: Get basic dataset information
+      description: Get shape, data types, memory usage, and preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasicInfoRequest'
+      responses:
+        '200':
+          description: Basic info retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicInfoResponse'
+
+  /statistical_summary:
+    post:
+      tags: [eda]
+      summary: Get statistical summary
+      description: Get descriptive statistics, correlations, skewness, and kurtosis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatisticalSummaryRequest'
+      responses:
+        '200':
+          description: Statistical summary computed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticalSummaryResponse'
+
+  /missing_data_analysis:
+    post:
+      tags: [eda]
+      summary: Analyze missing data
+      description: Analyze missing data patterns and get recommendations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MissingDataRequest'
+      responses:
+        '200':
+          description: Missing data analysis complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingDataResult'
+
+  /create_visualization:
+    post:
+      tags: [eda]
+      summary: Create visualization
+      description: Create data visualizations (histogram, boxplot, correlation, etc.)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VisualizationRequest'
+      responses:
+        '200':
+          description: Visualization created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisualizationResponse'
+
+  /infer_schema:
+    post:
+      tags: [eda]
+      summary: Infer data schema
+      description: Infer data types and schema with confidence scores
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SchemaInferenceRequest'
+      responses:
+        '200':
+          description: Schema inferred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaInferenceResponse'
+
+  /detect_outliers:
+    post:
+      tags: [eda]
+      summary: Detect outliers
+      description: Detect outliers using IQR, Isolation Forest, or LOF methods
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutlierDetectionRequest'
+      responses:
+        '200':
+          description: Outliers detected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutlierResult'
+
+  /datasets/{name}:
+    delete:
+      tags: [eda]
+      summary: Delete dataset
+      description: Delete a dataset from memory
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dataset deleted
+
+  # Refinery Agent Endpoints
+  /execute:
+    post:
+      tags: [refinery]
+      summary: Execute refinery task
+      description: Execute a data quality check or feature engineering task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+      responses:
+        '200':
+          description: Task executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+
+  /metrics:
+    get:
+      tags: [refinery, health]
+      summary: Get Prometheus metrics
+      description: Get Prometheus-formatted metrics
+      responses:
+        '200':
+          description: Prometheus metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /pipelines:
+    get:
+      tags: [refinery]
+      summary: List active pipelines
+      description: Get list of active feature engineering pipelines
+      responses:
+        '200':
+          description: List of pipelines
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pipelines:
+                    type: array
+                    items:
+                      type: object
+
+  # ML Agent Endpoints
+  /class_imbalance:
+    post:
+      tags: [ml]
+      summary: Handle class imbalance
+      description: Apply sampling techniques to handle class imbalance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassImbalanceRequest'
+      responses:
+        '200':
+          description: Class imbalance handled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MLResponse'
+
+  /train_validation_test:
+    post:
+      tags: [ml]
+      summary: Split data for training
+      description: Split data into training, validation, and test sets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrainValidationTestRequest'
+      responses:
+        '200':
+          description: Data split complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MLResponse'
+
+  /baseline_sanity:
+    post:
+      tags: [ml]
+      summary: Run baseline models
+      description: Train baseline models for sanity checking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaselineSanityRequest'
+      responses:
+        '200':
+          description: Baseline models trained
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MLResponse'
+
+  /experiment_tracking:
+    post:
+      tags: [ml]
+      summary: Track ML experiment
+      description: Track machine learning experiments with MLflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentTrackingRequest'
+      responses:
+        '200':
+          description: Experiment tracked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MLResponse'
+
+  /experiments:
+    get:
+      tags: [ml]
+      summary: List experiments
+      description: Get list of all ML experiments
+      responses:
+        '200':
+          description: List of experiments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  experiments:
+                    type: array
+                    items:
+                      type: object
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        healthy:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+        agents:
+          type: object
+        telemetry:
+          type: object
+        fe_module_enabled:
+          type: boolean
+        fe_module_available:
+          type: boolean
+
+    Dataset:
+      type: object
+      properties:
+        name:
+          type: string
+        shape:
+          type: array
+          items:
+            type: integer
+        memory_usage:
+          type: string
+        dtypes:
+          type: object
+
+    WorkflowRequest:
+      type: object
+      required:
+        - run_name
+        - tasks
+      properties:
+        run_name:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        priority:
+          type: integer
+          default: 1
+
+    Task:
+      type: object
+      required:
+        - agent
+        - action
+        - args
+      properties:
+        agent:
+          type: string
+          enum: [eda_agent, refinery_agent, ml_agent]
+        action:
+          type: string
+        args:
+          type: object
+
+    WorkflowResponse:
+      type: object
+      properties:
+        run_id:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+
+    RunStatus:
+      type: object
+      properties:
+        run_id:
+          type: string
+        status:
+          type: string
+          enum: [QUEUED, RUNNING, COMPLETED, FAILED]
+        progress:
+          type: number
+          format: float
+        current_task:
+          type: string
+          nullable: true
+        start_time:
+          type: string
+        end_time:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+
+    Artifact:
+      type: object
+      properties:
+        artifact_id:
+          type: string
+        type:
+          type: string
+        filename:
+          type: string
+        size:
+          type: integer
+        created_at:
+          type: string
+        download_url:
+          type: string
+          nullable: true
+
+    LoadDataRequest:
+      type: object
+      required:
+        - path
+        - name
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+        file_type:
+          type: string
+          enum: [csv, xlsx, json]
+
+    LoadDataResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        rows:
+          type: integer
+        cols:
+          type: integer
+        dtypes:
+          type: object
+        memory_usage:
+          type: string
+        sample_preview:
+          type: array
+          items:
+            type: object
+
+    BasicInfoRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+
+    BasicInfoResponse:
+      type: object
+      properties:
+        shape:
+          type: array
+          items:
+            type: integer
+        dtypes:
+          type: object
+        memory_usage:
+          type: string
+        preview:
+          type: array
+          items:
+            type: object
+        null_counts:
+          type: object
+
+    StatisticalSummaryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        sample_size:
+          type: integer
+          default: 10000
+
+    StatisticalSummaryResponse:
+      type: object
+      properties:
+        descriptive_stats:
+          type: object
+        correlation_matrix:
+          type: object
+        skewness:
+          type: object
+        kurtosis:
+          type: object
+
+    MissingDataRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+
+    MissingDataResult:
+      type: object
+      properties:
+        missing_counts:
+          type: object
+        missing_percentages:
+          type: object
+        missing_patterns:
+          type: array
+          items:
+            type: object
+        recommendations:
+          type: array
+          items:
+            type: string
+        visualization_base64:
+          type: string
+          nullable: true
+
+    VisualizationRequest:
+      type: object
+      required:
+        - name
+        - chart_type
+      properties:
+        name:
+          type: string
+        chart_type:
+          type: string
+          enum: [histogram, boxplot, correlation, scatter, line, bar]
+        columns:
+          type: array
+          items:
+            type: string
+        sample_size:
+          type: integer
+          default: 10000
+
+    VisualizationResponse:
+      type: object
+      properties:
+        chart_type:
+          type: string
+        columns:
+          type: array
+          items:
+            type: string
+        base64_image:
+          type: string
+        metadata:
+          type: object
+
+    SchemaInferenceRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        confidence_threshold:
+          type: number
+          format: float
+          default: 0.8
+
+    SchemaInferenceResponse:
+      type: object
+      properties:
+        schema:
+          type: object
+        confidence_scores:
+          type: object
+        recommendations:
+          type: array
+          items:
+            type: string
+        yaml_schema:
+          type: string
+
+    OutlierDetectionRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        method:
+          type: string
+          enum: [iqr, isolation_forest, lof]
+          default: iqr
+        columns:
+          type: array
+          items:
+            type: string
+        contamination:
+          type: number
+          format: float
+          default: 0.1
+
+    OutlierResult:
+      type: object
+      properties:
+        method:
+          type: string
+        outlier_indices:
+          type: array
+          items:
+            type: integer
+        outlier_count:
+          type: integer
+        outlier_percentage:
+          type: number
+          format: float
+        columns_analyzed:
+          type: array
+          items:
+            type: string
+        scores:
+          type: object
+          nullable: true
+
+    TaskRequest:
+      type: object
+      required:
+        - task_id
+        - action
+      properties:
+        task_id:
+          type: string
+        action:
+          type: string
+          enum:
+            - check_schema_consistency
+            - check_missing_values
+            - check_distributions
+            - check_duplicates
+            - check_leakage
+            - check_drift
+            - comprehensive_quality_report
+            - assign_feature_roles
+            - basic_impute_missing_values
+            - basic_scale_numeric_features
+            - basic_encode_categorical_features
+            - basic_generate_datetime_features
+            - basic_vectorise_text_features
+            - basic_generate_interactions
+            - basic_select_features
+            - save_fe_pipeline
+            - execute_feature_pipeline
+            - advanced_impute_missing_values
+            - advanced_encode_categorical_features
+            - advanced_feature_selection
+            - feature_interactions
+            - pipeline_persistence
+        mode:
+          type: string
+          enum: [data_quality, feature_engineering]
+        backend:
+          type: string
+          enum: [refinery_basic, fe_module]
+        params:
+          type: object
+
+    TaskResponse:
+      type: object
+      properties:
+        task_id:
+          type: string
+        success:
+          type: boolean
+        mode:
+          type: string
+        backend:
+          type: string
+        result:
+          type: object
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        execution_time:
+          type: number
+          format: float
+        timestamp:
+          type: number
+          format: float
+
+    ClassImbalanceRequest:
+      type: object
+      required:
+        - dataset_name
+      properties:
+        dataset_name:
+          type: string
+        method:
+          type: string
+          enum: [smote, adasyn, random_under, tomek, smoteenn, smotetomek]
+        target_column:
+          type: string
+
+    TrainValidationTestRequest:
+      type: object
+      required:
+        - dataset_name
+      properties:
+        dataset_name:
+          type: string
+        test_size:
+          type: number
+          format: float
+          default: 0.2
+        validation_size:
+          type: number
+          format: float
+          default: 0.2
+        stratify:
+          type: boolean
+          default: true
+
+    BaselineSanityRequest:
+      type: object
+      required:
+        - dataset_name
+        - target_column
+      properties:
+        dataset_name:
+          type: string
+        target_column:
+          type: string
+        models:
+          type: array
+          items:
+            type: string
+          default: [logistic_regression, decision_tree, random_forest]
+
+    ExperimentTrackingRequest:
+      type: object
+      required:
+        - experiment_name
+      properties:
+        experiment_name:
+          type: string
+        parameters:
+          type: object
+        metrics:
+          type: object
+        artifacts:
+          type: array
+          items:
+            type: string
+
+    MLResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        result:
+          type: object
+        error:
+          type: string
+          nullable: true
+        execution_time:
+          type: number
+          format: float
