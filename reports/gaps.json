@@ -263,7 +263,12 @@
         "Better test visibility (uploaded artifacts)",
         "Catches version-specific bugs (matrix builds)"
       ],
-      "proposed_files": [],
+      "proposed_files": [
+        ".github/workflows/ci.yml (enhance with caching)",
+        ".github/workflows/ci.yml (add parallel test shards)",
+        ".github/workflows/ci.yml (add artifact uploads)",
+        ".github/workflows/ci.yml (add matrix builds)"
+      ],
       "enhancements": [
         "Add actions/cache@v3 for pip/npm",
         "Use pytest-xdist for parallel Python tests",
@@ -288,7 +293,12 @@
         "Prevents coverage regression",
         "Team accountability"
       ],
-      "proposed_files": [],
+      "proposed_files": [
+        "requirements.txt (add pytest-cov)",
+        ".github/workflows/ci.yml (add coverage step)",
+        ".codecov.yml",
+        "README.md (add coverage badge)"
+      ],
       "enhancements": [
         "Add pytest-cov to requirements.txt",
         "Generate coverage reports in CI",
@@ -313,7 +323,12 @@
         "Encourages quality standards",
         "Standard in open-source projects"
       ],
-      "proposed_files": [],
+      "proposed_files": [
+        "README.md (add CI status badge)",
+        "README.md (add coverage badge)",
+        "README.md (add security badge)",
+        "README.md (add activity badges)"
+      ],
       "enhancements": [
         "Add GitHub Actions workflow status badge",
         "Add Codecov badge",
