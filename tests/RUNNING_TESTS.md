@@ -53,10 +53,19 @@ python master_orchestrator_api.py
 npm run test:contracts
 ```
 
-### Run All Tests
+### Run All Tests (No Server Required)
 ```bash
 npm test
 ```
+
+This runs integration tests and DSL schema tests (60 tests total).
+
+### Run All Tests (Including Contract Endpoints - Server Required)
+```bash
+npm run test:all
+```
+
+This runs all tests including contract endpoint tests that require a live API server.
 
 ## Test Execution Times
 
