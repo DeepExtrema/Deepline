@@ -1,4 +1,28 @@
 {
+  "name": "sherlock-multiagent-data-scientist",
+  "version": "2.1.0",
+  "description": "End-to-end data science powerhouse with multi-agent orchestration",
+  "scripts": {
+    "test": "npm run test:integration && npm run test:e2e",
+    "test:setup": "npm run compose:up && npm run seed:test && npm run playwright:install",
+    "test:e2e": "playwright test --reporter=line",
+    "test:integration": "vitest run",
+    "test:integration:watch": "vitest watch",
+    "compose:up": "docker compose -f docker-compose.ci.yml up -d --wait",
+    "compose:down": "docker compose -f docker-compose.ci.yml down -v",
+    "seed:test": "tsx scripts/seed-test-env.ts",
+    "playwright:install": "playwright install --with-deps chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "mongodb": "^6.3.0",
+    "testcontainers": "^10.5.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.1.0",
+    "@vitest/coverage-v8": "^1.1.0"
+  },
   "dependencies": {
     "lucide-react": "^0.537.0"
   }
