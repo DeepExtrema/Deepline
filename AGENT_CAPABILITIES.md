@@ -575,12 +575,12 @@ Save feature engineering pipeline for reuse.
 ```
 
 #### 22. `pipeline_persistence`
-Advanced pipeline persistence with versioning (uses FE Module backend).
+Advanced pipeline persistence with versioning and enhanced tracking capabilities.
 
 **Use Cases:**
-- Pipeline versioning
+- Pipeline versioning with metadata
 - Advanced persistence strategies
-- Production deployment
+- Production deployment with full audit trail
 
 **Example:**
 ```json
