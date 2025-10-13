@@ -17,6 +17,7 @@ import pandas as pd
 import numpy as np
 import httpx
 from pydantic import BaseModel
+import pytest
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -503,6 +504,7 @@ class RefineryE2ETest:
         
         return results
 
+@pytest.mark.skip(reason="Requires additional Python packages or external services")
 async def main():
     """Main test runner."""
     async with RefineryE2ETest() as tester:
