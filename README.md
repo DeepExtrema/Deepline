@@ -15,6 +15,14 @@ At its core, Sherlock harnesses a Master Orchestrator that orchestrates every ta
 
 Whether you're a data enthusiast or a seasoned data scientist, Sherlock makes the entire journey—from EDA to feature engineering to model training—feel like magic.
 
+## 🚀 **Quick Start**
+
+**New to Sherlock?** Check out the **[Agent Capabilities Guide](AGENT_CAPABILITIES.md)** to see what tasks you can accomplish with each agent:
+- 📊 **EDA Agent** - Explore and visualize your data
+- 🔧 **Refinery Agent** - Ensure data quality and engineer features
+- 🤖 **Model Agent** - Train and evaluate ML models
+- ⚙️ **Custom Agent** - Run custom scripts and integrations
+
 ## 🏗️ **Architecture Overview**
 
 The system follows a modular microservices design with these core components:
@@ -284,6 +292,7 @@ See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines on code
 
 Sherlock includes extensive documentation in the `docs/` directory:
 
+- **[Agent Capabilities Guide](AGENT_CAPABILITIES.md)** – comprehensive guide to all available agents and their tasks/actions
 - **[Installation Guide](docs/INSTALLATION.md)** – step‑by‑step setup instructions including Windows‑specific steps and verification procedures
 - **[Configuration Guide](docs/CONFIGURATION.md)** – description of the YAML configuration and environment variables with tuning tips
 - **[Examples & Use Cases](docs/EXAMPLES.md)** – a collection of practical workflows and advanced scenarios to try out
