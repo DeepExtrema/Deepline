@@ -574,6 +574,30 @@ Save feature engineering pipeline for reuse.
 }
 ```
 
+#### 22. `pipeline_persistence`
+Advanced pipeline persistence with versioning (uses FE Module backend).
+
+**Use Cases:**
+- Pipeline versioning
+- Advanced persistence strategies
+- Production deployment
+
+**Example:**
+```json
+{
+  "agent": "refinery",
+  "action": "pipeline_persistence",
+  "args": {
+    "run_id": "run_001",
+    "version": "1.0",
+    "metadata": {
+      "author": "data_scientist",
+      "description": "Customer churn feature pipeline"
+    }
+  }
+}
+```
+
 ---
 
 ## Model Agent (Machine Learning)
