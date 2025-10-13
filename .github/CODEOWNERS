@@ -1,0 +1,146 @@
+# CODEOWNERS - Define code ownership and required reviewers
+# 
+# This file defines who must review pull requests that modify specific files or directories.
+# More specific rules override general rules.
+#
+# Syntax: pattern @github-username @github-team
+# Documentation: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ============================================================================
+# Security & Authentication - Requires security team approval
+# ============================================================================
+
+# Authentication and authorization code
+/mcp-server/security/**                     @security-team @lead-architect
+/tests/security/**                          @security-team
+
+# Security documentation
+/docs/secrets.md                            @security-team
+/reports/security.md                        @security-team
+
+# ============================================================================
+# CI/CD & Infrastructure - Requires DevOps team approval
+# ============================================================================
+
+# GitHub Actions workflows
+/.github/workflows/**                       @devops-team @security-team
+/.github/CODEOWNERS                         @devops-team @security-team
+
+# Docker and deployment configuration
+docker-compose*.yml                         @devops-team
+*Dockerfile                                 @devops-team
+/helm/**                                    @devops-team
+/mcp-server/production_deployment.py        @devops-team
+
+# Kubernetes and infrastructure
+*.yaml                                      @devops-team
+resource-quota.yaml                         @devops-team
+
+# ============================================================================
+# API & Backend - Requires backend team approval
+# ============================================================================
+
+# API routers (may contain authentication logic)
+/mcp-server/api/*router.py                  @backend-team @security-team
+
+# Main API entry points
+/mcp-server/master_orchestrator_api.py      @backend-team
+/mcp-server/server.py                       @backend-team
+/mcp-server/main.py                         @backend-team
+
+# Agent implementations
+/mcp-server/eda_agent*.py                   @backend-team
+/mcp-server/ml_agent*.py                    @backend-team
+/mcp-server/refinery_agent*.py              @backend-team
+
+# Orchestration logic
+/mcp-server/orchestrator/**                 @backend-team
+
+# ============================================================================
+# Data & Privacy - Requires data governance approval
+# ============================================================================
+
+# Data source configurations
+/mcp-server/data_sources/**                 @data-governance @backend-team
+
+# Data schemas
+/mcp-server/schemas/**                      @data-governance @backend-team
+
+# Versioning and snapshots
+/mcp-server/versioning/**                   @data-governance @backend-team
+
+# ============================================================================
+# Frontend - Requires frontend team approval
+# ============================================================================
+
+# Dashboard UI
+/dashboard-ui/**                            @frontend-team
+
+# Exclude node_modules from review requirements
+/dashboard-ui/node_modules/**               
+
+# ============================================================================
+# Configuration Files - Requires senior approval
+# ============================================================================
+
+# Environment configuration templates (no actual secrets!)
+*.env.example                               @security-team @devops-team
+
+# Core configuration
+/mcp-server/config.yaml                     @backend-team @devops-team
+/mcp-server/config.py                       @backend-team
+
+# Python package configuration
+/mcp-server/pyproject.toml                  @backend-team
+/mcp-server/requirements*.txt               @backend-team
+
+# ============================================================================
+# Documentation - Team leads can approve
+# ============================================================================
+
+# API documentation
+/docs/HYBRID_API.md                         @backend-team
+/docs/USER_GUIDE.md                         @frontend-team @backend-team
+/docs/CONFIGURATION.md                      @devops-team
+
+# General documentation
+*.md                                        @team-leads
+
+# System audit reports
+*AUDIT_REPORT.md                            @lead-architect
+*DEPLOYMENT*.md                             @devops-team
+
+# ============================================================================
+# Tests - Respective team ownership
+# ============================================================================
+
+# Security tests
+/tests/security/**                          @security-team
+
+# Backend tests
+/mcp-server/test_*.py                       @backend-team
+
+# ============================================================================
+# Default - Any team member can approve
+# ============================================================================
+
+# Catch-all for files not matching above patterns
+# At least one approval required
+*                                           @team-leads
+
+# ============================================================================
+# Notes for Reviewers
+# ============================================================================
+# 
+# When reviewing PRs touching authentication modules:
+# 1. Verify all security tests pass
+# 2. Check for potential data leakage
+# 3. Ensure proper authorization checks
+# 4. Validate input sanitization
+# 5. Confirm no secrets in code
+# 6. Review error handling for information disclosure
+#
+# Least Privilege Principle:
+# - PRs touching /mcp-server/security/** MUST have security team approval
+# - Changes to authentication require minimum 2 reviewers
+# - Production deployment changes require DevOps + Security approval
