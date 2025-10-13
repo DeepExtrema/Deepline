@@ -21,6 +21,7 @@ import pandas as pd
 import numpy as np
 import httpx
 from pydantic import BaseModel
+import pytest
 
 # Configure logging
 logging.basicConfig(
@@ -667,6 +668,8 @@ class IrisE2ETest:
                     for metric, value in metrics.items():
                         logger.info(f"    {metric}: {value:.4f}")
 
+@pytest.mark.skip(reason="Requires additional Python packages or external services")
+@pytest.mark.skip(reason="Requires additional Python packages or external services")
 async def main():
     """Main test runner."""
     async with IrisE2ETest() as tester:
