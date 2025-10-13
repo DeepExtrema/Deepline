@@ -222,7 +222,7 @@ jobs:
 
 ## Current Status
 
-**Last Run:** 2025-10-13
+**Last Run:** See flake-log.md for latest analysis timestamp
 **Total Tests:** 7
 **Passing:** 2 (test_refinery_basic.py, test_refinery_edge_cases.py)
 **Skipped:** 5 (missing Python packages: pandas, httpx)

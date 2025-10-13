@@ -8,7 +8,7 @@ This script demonstrates how tests are quarantined after multiple failed fix att
 import asyncio
 import logging
 from pathlib import Path
-from debug_flake_fixer import DebugFlakeFixer, TestFailure, FailureCause
+from debug_flake_fixer import TestFailure, FailureCause
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)

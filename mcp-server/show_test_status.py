@@ -18,10 +18,20 @@ def parse_flake_log(report_path: Path):
     
     content = report_path.read_text()
     
-    # Extract metrics
-    total_tests = int(re.search(r'\*\*Total Tests:\*\* (\d+)', content).group(1))
-    failed_tests = int(re.search(r'\*\*Failed Tests:\*\* (\d+)', content).group(1))
-    quarantined_tests = int(re.search(r'\*\*Quarantined Tests:\*\* (\d+)', content).group(1))
+    # Extract metrics with error handling
+    try:
+        total_match = re.search(r'\*\*Total Tests:\*\* (\d+)', content)
+        failed_match = re.search(r'\*\*Failed Tests:\*\* (\d+)', content)
+        quarantined_match = re.search(r'\*\*Quarantined Tests:\*\* (\d+)', content)
+        
+        if not (total_match and failed_match and quarantined_match):
+            return None
+        
+        total_tests = int(total_match.group(1))
+        failed_tests = int(failed_match.group(1))
+        quarantined_tests = int(quarantined_match.group(1))
+    except (AttributeError, ValueError) as e:
+        return None
     
     # Extract test lists by cause
     causes = {
