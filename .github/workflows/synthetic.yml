@@ -1,0 +1,173 @@
+name: A8 Synthetic Canary Tests
+
+# Run every 6 hours to monitor dashboard health
+on:
+  schedule:
+    # Run at 00:00, 06:00, 12:00, and 18:00 UTC
+    - cron: '0 */6 * * *'
+  
+  # Allow manual trigger for testing
+  workflow_dispatch:
+  
+  # Also run on pushes to main for validation
+  push:
+    branches:
+      - main
+    paths:
+      - 'dashboard-ui/**'
+      - 'synthetic/**'
+      - '.github/workflows/synthetic.yml'
+      - 'playwright.config.ts'
+
+jobs:
+  synthetic-canary:
+    name: Synthetic Monitoring Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    # Use a dedicated test tenant to avoid mutating production data
+    env:
+      DASHBOARD_URL: http://localhost:3000
+      TEST_TENANT: synthetic-canary-test
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install root dependencies
+        run: npm install
+      
+      - name: Install dashboard dependencies
+        working-directory: dashboard-ui
+        run: npm install
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      
+      - name: Start backend services
+        run: |
+          # Start backend services in the background
+          docker-compose up -d || echo "Docker compose not available, skipping backend"
+          # Wait for services to be ready
+          sleep 10
+      
+      - name: Start dashboard dev server
+        working-directory: dashboard-ui
+        run: |
+          npm run dev &
+          # Wait for dev server to start
+          sleep 10
+          # Verify server is running
+          curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:3000 || echo "Dashboard not ready"
+      
+      - name: Run synthetic canary tests
+        id: test
+        run: npm run test:synthetic
+        continue-on-error: true
+      
+      - name: Upload trace artifacts on failure
+        if: failure() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace-${{ github.run_id }}
+          path: |
+            test-results/
+            synthetic-results/
+          retention-days: 30
+      
+      - name: Create trace.zip for webhook
+        if: failure() && steps.test.outcome == 'failure'
+        run: |
+          cd test-results
+          zip -r ../trace.zip . || echo "No test results to zip"
+          cd ..
+      
+      - name: Upload trace.zip artifact
+        if: failure() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace.zip
+          path: trace.zip
+          retention-days: 30
+      
+      - name: Send Slack notification on failure
+        if: failure() && steps.test.outcome == 'failure'
+        run: |
+          # Placeholder for Slack webhook integration
+          # See /reports/synthetic-integration.md for configuration
+          
+          if [ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            
+            curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+              -H 'Content-Type: application/json' \
+              -d "{
+                \"text\": \"🚨 A8 Synthetic Canary Test Failed\",
+                \"blocks\": [
+                  {
+                    \"type\": \"header\",
+                    \"text\": {
+                      \"type\": \"plain_text\",
+                      \"text\": \"🚨 Synthetic Canary Alert\"
+                    }
+                  },
+                  {
+                    \"type\": \"section\",
+                    \"text\": {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"*Test Run:* ${{ github.run_number }}\\n*Workflow:* ${{ github.workflow }}\\n*Status:* Failed\\n*Branch:* ${{ github.ref_name }}\"
+                    }
+                  },
+                  {
+                    \"type\": \"section\",
+                    \"text\": {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"<${ARTIFACT_URL}|View Artifacts & Traces>\"
+                    }
+                  }
+                ]
+              }"
+          else
+            echo "SLACK_WEBHOOK_URL not configured. See /reports/synthetic-integration.md"
+          fi
+      
+      - name: Send generic webhook notification on failure
+        if: failure() && steps.test.outcome == 'failure'
+        run: |
+          # Placeholder for generic webhook integration
+          # Configure WEBHOOK_URL secret for custom alerting
+          
+          if [ -n "${{ secrets.WEBHOOK_URL }}" ]; then
+            ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            
+            curl -X POST ${{ secrets.WEBHOOK_URL }} \
+              -H 'Content-Type: application/json' \
+              -d "{
+                \"event\": \"synthetic_canary_failed\",
+                \"run_id\": \"${{ github.run_id }}\",
+                \"run_number\": \"${{ github.run_number }}\",
+                \"workflow\": \"${{ github.workflow }}\",
+                \"repository\": \"${{ github.repository }}\",
+                \"branch\": \"${{ github.ref_name }}\",
+                \"artifact_url\": \"${ARTIFACT_URL}\",
+                \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+              }"
+          else
+            echo "WEBHOOK_URL not configured. See /reports/synthetic-integration.md"
+          fi
+      
+      - name: Fail workflow if tests failed
+        if: steps.test.outcome == 'failure'
+        run: exit 1
+      
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose down || echo "Docker compose cleanup not needed"
+          pkill -f "vite" || echo "No vite processes to kill"

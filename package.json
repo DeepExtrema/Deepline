@@ -1,5 +1,19 @@
 {
+  "name": "sherlock-multiagent-data-scientist",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:synthetic": "playwright test",
+    "test:synthetic:ui": "playwright test --ui",
+    "test:synthetic:headed": "playwright test --headed",
+    "playwright:install": "playwright install --with-deps chromium"
+  },
   "dependencies": {
     "lucide-react": "^0.537.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
   }
 }
