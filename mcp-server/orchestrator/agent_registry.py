@@ -6,7 +6,7 @@ Exposes the agent-action matrix from configuration for UI and validation.
 """
 
 import logging
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Set, Optional, Any
 from ..config import get_config
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,6 @@ def get_agent_matrix() -> Dict[str, List[str]]:
         config = get_config()
         _agent_matrix = {
             "eda": config.master_orchestrator.agent_actions.eda,
- cursor/prepare-refinery-agent-for-rollout-8ae2
             "refinery": config.master_orchestrator.agent_actions.refinery,
             "model": config.master_orchestrator.agent_actions.model,
             "custom": config.master_orchestrator.agent_actions.custom
@@ -103,7 +102,7 @@ def is_valid(agent: str, action: str) -> bool:
     """
     return is_valid_action(agent, action)
 
-def get_agent_stats() -> Dict[str, Dict[str, any]]:
+def get_agent_stats() -> Dict[str, Dict[str, Any]]:
     """
     Get statistics about agents for dashboard/API.
     
@@ -132,7 +131,7 @@ def refresh_agent_matrix():
     _agent_names = None
     logger.info("Agent matrix refreshed from configuration")
 
-def validate_workflow_tasks(tasks: List[Dict[str, any]]) -> List[str]:
+def validate_workflow_tasks(tasks: List[Dict[str, Any]]) -> List[str]:
     """
     Validate all tasks in a workflow against the agent matrix.
     
