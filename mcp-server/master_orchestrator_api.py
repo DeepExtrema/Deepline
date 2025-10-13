@@ -34,6 +34,7 @@ if str(CURRENT_DIR) not in sys.path:
 # Routers
 from api.data_router import create_data_router
 from api.agent_router import create_agent_router
+from api.auth_router import create_auth_router
 
 
 # Configure logging
@@ -59,6 +60,7 @@ app.add_middleware(
 )
 
 # Mount feature routers
+app.include_router(create_auth_router())
 app.include_router(create_data_router())
 app.include_router(create_agent_router())
 

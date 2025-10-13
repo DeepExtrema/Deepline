@@ -1,0 +1,66 @@
+{
+  "auth": {
+    "signupForm": "signup-form",
+    "signupUsername": "signup-username-input",
+    "signupEmail": "signup-email-input",
+    "signupFullName": "signup-fullname-input",
+    "signupPassword": "signup-password-input",
+    "signupRole": "signup-role-select",
+    "signupSubmit": "signup-submit-btn",
+    "signupError": "signup-error-msg",
+    
+    "loginForm": "login-form",
+    "loginUsername": "login-username-input",
+    "loginPassword": "login-password-input",
+    "loginSubmit": "login-submit-btn",
+    "loginError": "login-error-msg",
+    
+    "logoutBtn": "logout-btn",
+    "userMenu": "user-menu",
+    "userProfile": "user-profile"
+  },
+  
+  "navigation": {
+    "homeLink": "nav-home-link",
+    "dataSourcesLink": "nav-datasources-link",
+    "workflowsLink": "nav-workflows-link",
+    "dashboardLink": "nav-dashboard-link"
+  },
+  
+  "dataSources": {
+    "list": "datasources-list",
+    "listItem": "datasource-item",
+    "createBtn": "datasource-create-btn",
+    "createForm": "datasource-create-form",
+    "nameInput": "datasource-name-input",
+    "typeSelect": "datasource-type-select",
+    "urlInput": "datasource-url-input",
+    "submitBtn": "datasource-submit-btn",
+    "cancelBtn": "datasource-cancel-btn",
+    "editBtn": "datasource-edit-btn",
+    "deleteBtn": "datasource-delete-btn",
+    "error": "datasource-error-msg",
+    "validationError": "datasource-validation-error"
+  },
+  
+  "workflows": {
+    "list": "workflows-list",
+    "listItem": "workflow-item",
+    "createBtn": "workflow-create-btn",
+    "createForm": "workflow-create-form",
+    "nameInput": "workflow-name-input",
+    "tasksInput": "workflow-tasks-input",
+    "submitBtn": "workflow-submit-btn",
+    "statusBadge": "workflow-status-badge",
+    "runBtn": "workflow-run-btn"
+  },
+  
+  "common": {
+    "loadingSpinner": "loading-spinner",
+    "errorBanner": "error-banner",
+    "successBanner": "success-banner",
+    "confirmDialog": "confirm-dialog",
+    "confirmYes": "confirm-yes-btn",
+    "confirmNo": "confirm-no-btn"
+  }
+}
