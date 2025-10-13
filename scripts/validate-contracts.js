@@ -7,7 +7,7 @@
  * It runs as part of the CI pipeline to ensure all services maintain their contracts.
  */
 
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -16,19 +16,27 @@ console.log('🔍 Starting Contract Validation...\n');
 let exitCode = 0;
 
 /**
- * Run a command and handle errors
+ * Run a command and handle errors using spawn for security
  */
-function runCommand(command, description) {
+function runCommand(command, args, description, options = {}) {
   console.log(`\n📋 ${description}...`);
   try {
-    const output = execSync(command, { 
+    const result = spawnSync(command, args, { 
       encoding: 'utf-8',
-      stdio: 'inherit'
+      stdio: 'inherit',
+      ...options
     });
-    console.log(`✅ ${description} - PASSED`);
-    return true;
+    
+    if (result.status === 0) {
+      console.log(`✅ ${description} - PASSED`);
+      return true;
+    } else {
+      console.error(`❌ ${description} - FAILED`);
+      exitCode = 1;
+      return false;
+    }
   } catch (error) {
-    console.error(`❌ ${description} - FAILED`);
+    console.error(`❌ ${description} - FAILED:`, error.message);
     exitCode = 1;
     return false;
   }
@@ -39,12 +47,15 @@ function runCommand(command, description) {
  */
 function runPythonContractTests() {
   const testFile = path.join(__dirname, '../mcp-server/test_refinery_contract_validation.py');
+  const workDir = path.join(__dirname, '../mcp-server');
   
   if (fs.existsSync(testFile)) {
     console.log('\n📦 Running Python contract validation tests...');
     return runCommand(
-      `cd ${path.join(__dirname, '../mcp-server')} && python ${testFile}`,
-      'Refinery Agent Contract Validation'
+      'python',
+      [testFile],
+      'Refinery Agent Contract Validation',
+      { cwd: workDir }
     );
   } else {
     console.log('⚠️  Python contract tests not found, skipping...');
