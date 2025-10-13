@@ -17,6 +17,11 @@ let exitCode = 0;
 
 /**
  * Run a command and handle errors using spawn for security
+ * @param {string} command - The command to execute (e.g., 'python', 'node')
+ * @param {Array<string>} args - Array of arguments to pass to the command
+ * @param {string} description - Human-readable description of the command
+ * @param {Object} options - Additional options for spawnSync (e.g., { cwd: '/path' })
+ * @returns {boolean} - True if command succeeded, false otherwise
  */
 function runCommand(command, args, description, options = {}) {
   console.log(`\n📋 ${description}...`);
@@ -27,11 +32,19 @@ function runCommand(command, args, description, options = {}) {
       ...options
     });
     
+    // Check for spawn errors (e.g., command not found)
+    if (result.error) {
+      console.error(`❌ ${description} - FAILED: ${result.error.message}`);
+      exitCode = 1;
+      return false;
+    }
+    
+    // Check exit status
     if (result.status === 0) {
       console.log(`✅ ${description} - PASSED`);
       return true;
     } else {
-      console.error(`❌ ${description} - FAILED`);
+      console.error(`❌ ${description} - FAILED (exit code: ${result.status})`);
       exitCode = 1;
       return false;
     }
