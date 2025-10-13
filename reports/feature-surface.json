@@ -1,0 +1,621 @@
+{
+  "repository": {
+    "name": "Sherlock-Multiagent-Data-Scientist",
+    "owner": "DeepExtrema",
+    "version": "2.1.0",
+    "purpose": "End-to-end, orchestrator-driven data science platform enabling EDA, data quality validation, feature engineering, and model training through microservices agents with real-time observability",
+    "architecture": "microservices",
+    "license": {
+      "type": "hybrid",
+      "server": "BUSL-1.1",
+      "clients": "Apache-2.0"
+    }
+  },
+  "features": [
+    {
+      "id": "dataset-upload-load",
+      "name": "Upload & Load Dataset",
+      "description": "Upload CSV/Parquet datasets and load into memory for analysis",
+      "primary_files": [
+        "mcp-server/master_orchestrator_api.py",
+        "mcp-server/eda_agent.py",
+        "mcp-server/data_sources/"
+      ],
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/datasets/upload",
+          "service": "master_orchestrator",
+          "port": 8000
+        },
+        {
+          "method": "POST",
+          "path": "/load_data",
+          "service": "eda_agent",
+          "port": 8001
+        }
+      ],
+      "entry_commands": [
+        "curl -X POST http://localhost:8000/datasets/upload -F \"file=@data.csv\" -F \"name=my_dataset\"",
+        "python start_master_orchestrator.py"
+      ],
+      "data_dependencies": [
+        "local_filesystem",
+        "mongodb_optional"
+      ],
+      "risk_level": "medium",
+      "risk_notes": "File upload validation needed; supports CSV, Parquet formats"
+    },
+    {
+      "id": "exploratory-data-analysis",
+      "name": "Exploratory Data Analysis (EDA)",
+      "description": "Statistical summaries, missing data analysis, correlation matrices, outlier detection, and publication-ready visualizations",
+      "primary_files": [
+        "mcp-server/eda_agent.py",
+        "mcp-server/server.py",
+        "docs/USER_GUIDE.md"
+      ],
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "service": "eda_agent",
+          "port": 8001
+        },
+        {
+          "method": "POST",
+          "path": "/basic_info",
+          "service": "eda_agent",
+          "port": 8001
+        },
+        {
+          "method": "POST",
+          "path": "/statistical_summary",
+          "service": "eda_agent",
+          "port": 8001
+        },
+        {
+          "method": "POST",
+          "path": "/missing_data_analysis",
+          "service": "eda_agent",
+          "port": 8001
+        },
+        {
+          "method": "POST",
+          "path": "/detect_outliers",
+          "service": "eda_agent",
+          "port": 8001
+        },
+        {
+          "method": "POST",
+          "path": "/create_visualization",
+          "service": "eda_agent",
+          "port": 8001
+        }
+      ],
+      "entry_commands": [
+        "python start_eda_service.py",
+        "curl http://localhost:8001/health"
+      ],
+      "data_dependencies": [
+        "redis_caching",
+        "dataset_in_memory"
+      ],
+      "risk_level": "medium",
+      "risk_notes": "Large datasets may cause memory issues; 10k row sampling used for correlations"
+    },
+    {
+      "id": "data-quality-validation",
+      "name": "Data Quality Validation",
+      "description": "Schema consistency checks, missing value analysis, distribution validation, drift detection, and comprehensive quality reports",
+      "primary_files": [
+        "mcp-server/refinery_agent.py",
+        "mcp-server/REFINERY_AGENT_GUIDE.md",
+        "mcp-server/dq/"
+      ],
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/execute",
+          "service": "refinery_agent",
+          "port": 8005
+        },
+        {
+          "method": "GET",
+          "path": "/health",
+          "service": "refinery_agent",
+          "port": 8005
+        },
+        {
+          "method": "GET",
+          "path": "/metrics",
+          "service": "refinery_agent",
+          "port": 8005
+        }
+      ],
+      "actions": [
+        "check_schema_consistency",
+        "check_missing_values",
+        "check_distributions",
+        "check_duplicates",
+        "check_leakage",
+        "check_drift",
+        "comprehensive_quality_report"
+      ],
+      "entry_commands": [
+        "python -m uvicorn refinery_agent:app --port 8005"
+      ],
+      "data_dependencies": [
+        "evidently_library",
+        "dataset_files"
+      ],
+      "risk_level": "low",
+      "risk_notes": "Read-only operations; comprehensive validation framework"
+    },
+    {
+      "id": "feature-engineering",
+      "name": "Feature Engineering Pipeline",
+      "description": "Imputation, scaling, encoding, datetime features, text vectorization, feature interactions, and selection",
+      "primary_files": [
+        "mcp-server/refinery_agent.py",
+        "mcp-server/fe/"
+      ],
+      "endpoints": [
+        {
+          "method": "POST",
+          "path": "/execute",
+          "service": "refinery_agent",
+          "port": 8005
+        }
+      ],
+      "actions": [
+        "assign_feature_roles",
+        "basic_impute_missing_values",
+        "basic_scale_numeric_features",
+        "basic_encode_categorical_features",
+        "basic_generate_datetime_features",
+        "basic_vectorise_text_features",
+        "basic_generate_interactions",
+        "basic_select_features",
+        "save_fe_pipeline",
+        "execute_feature_pipeline",
+        "advanced_impute_missing_values",
+        "advanced_encode_categorical_features",
+        "advanced_feature_selection"
+      ],
+      "entry_commands": [
+        "curl -X POST http://localhost:8005/execute -H \"Content-Type: application/json\" -d '{\"action\": \"basic_impute_missing_values\", \"params\": {\"data_path\": \"data.csv\"}}'"
+      ],
+      "data_dependencies": [
+        "scikit_learn_pipelines",
+        "feature_metadata"
+      ],
+      "risk_level": "medium",
+      "risk_notes": "Transformation logic; mode validation prevents accidental transforms"
+    },
+    {
+      "id": "model-training-evaluation",
+      "name": "Model Training & Evaluation",
+      "description": "Class imbalance analysis, train/validation/test splits, cross-validation, baseline models, experiment tracking with MLflow",
+      "primary_files": [
+        "mcp-server/ml_agent.py",
+        "mcp-server/ML_WORKFLOW_GUIDE.md",
+        "mcp-server/mlruns/"
+      ],
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "service": "ml_agent",
+          "port": 8002
+        },
+        {
+          "method": "POST",
+          "path": "/class_imbalance",
+          "service": "ml_agent",
+          "port": 8002
+        },
+        {
+          "method": "POST",
+          "path": "/train_validation_test",
+          "service": "ml_agent",
+          "port": 8002
+        },
+        {
+          "method": "POST",
+          "path": "/baseline_sanity",
+          "service": "ml_agent",
+          "port": 8002
+        },
+        {
+          "method": "POST",
+          "path": "/experiment_tracking",
+          "service": "ml_agent",
+          "port": 8002
+        }
+      ],
+      "entry_commands": [
+        "python -m uvicorn ml_agent:app --port 8002"
+      ],
+      "data_dependencies": [
+        "mlflow_backend",
+        "training_datasets",
+        "scikit_learn"
+      ],
+      "risk_level": "high",
+      "risk_notes": "Model persistence, hyperparameter tuning; GPU/CPU resource management required"
+    },
+    {
+      "id": "workflow-orchestration",
+      "name": "Workflow Orchestration",
+      "description": "Task coordination, dependency management, retry logic, deadlock monitoring, graceful cancellation, artifact management",
+      "primary_files": [
+        "mcp-server/master_orchestrator_api.py",
+        "mcp-server/orchestrator/workflow_manager.py",
+        "mcp-server/orchestrator/agent_registry.py",
+        "mcp-server/orchestrator/sla_monitor.py"
+      ],
+      "endpoints": [
+        {
+          "method": "GET",
+          "path": "/health",
+          "service": "master_orchestrator",
+          "port": 8000
+        },
+        {
+          "method": "POST",
+          "path": "/workflows/start",
+          "service": "master_orchestrator",
+          "port": 8000
+        },
+        {
+          "method": "GET",
+          "path": "/runs/{run_id}/status",
+          "service": "master_orchestrator",
+          "port": 8000
+        },
+        {
+          "method": "GET",
+          "path": "/runs/{run_id}/artifacts",
+          "service": "master_orchestrator",
+          "port": 8000
+        },
+        {
+          "method": "DELETE",
+          "path": "/runs/{run_id}",
+          "service": "master_orchestrator",
+          "port": 8000
+        }
+      ],
+      "entry_commands": [
+        "python start_master_orchestrator.py",
+        "curl http://localhost:8000/docs"
+      ],
+      "data_dependencies": [
+        "mongodb_runs",
+        "redis_locks",
+        "kafka_events"
+      ],
+      "risk_level": "medium",
+      "risk_notes": "Deadlock monitoring, graceful cancellation; task dependencies managed"
+    },
+    {
+      "id": "realtime-observability",
+      "name": "Real-time Observability Dashboard",
+      "description": "React-based dashboard with live event streaming, workflow status, agent health monitoring, and performance charts",
+      "primary_files": [
+        "dashboard-ui/src/",
+        "dashboard-ui/package.json"
+      ],
+      "endpoints": [
+        {
+          "method": "WebSocket",
+          "path": "/ws/events",
+          "service": "master_orchestrator",
+          "port": 8000
+        }
+      ],
+      "entry_commands": [
+        "cd dashboard-ui && npm run dev",
+        "open http://localhost:3000"
+      ],
+      "data_dependencies": [
+        "fastapi_websocket",
+        "kafka_event_stream",
+        "recent_runs_api"
+      ],
+      "risk_level": "medium",
+      "risk_notes": "WebSocket connection stability; event streaming from Kafka"
+    }
+  ],
+  "runnable_surfaces": {
+    "services": [
+      {
+        "name": "master_orchestrator",
+        "type": "fastapi_service",
+        "entrypoint": "mcp-server/start_master_orchestrator.py",
+        "alternative_entrypoint": "python master_orchestrator_api.py",
+        "port": 8000,
+        "health_endpoint": "/health",
+        "api_docs": "/docs",
+        "description": "Workflow coordination, task dispatch, artifact management",
+        "startup_command": "python start_master_orchestrator.py"
+      },
+      {
+        "name": "eda_agent",
+        "type": "fastapi_service",
+        "entrypoint": "mcp-server/start_eda_service.py",
+        "alternative_entrypoint": "python eda_agent.py",
+        "port": 8001,
+        "health_endpoint": "/health",
+        "api_docs": "/docs",
+        "description": "Data loading, statistical analysis, visualization, outlier detection",
+        "startup_command": "python start_eda_service.py"
+      },
+      {
+        "name": "refinery_agent",
+        "type": "fastapi_service",
+        "entrypoint": "python -m uvicorn refinery_agent:app --port 8005",
+        "port": 8005,
+        "health_endpoint": "/health",
+        "api_docs": "/docs",
+        "description": "Data quality validation, feature engineering, drift detection",
+        "startup_command": "python -m uvicorn refinery_agent:app --port 8005"
+      },
+      {
+        "name": "ml_agent",
+        "type": "fastapi_service",
+        "entrypoint": "python -m uvicorn ml_agent:app --port 8002",
+        "port": 8002,
+        "health_endpoint": "/health",
+        "api_docs": "/docs",
+        "description": "Model training, cross-validation, baseline checks, experiment tracking",
+        "startup_command": "python -m uvicorn ml_agent:app --port 8002"
+      },
+      {
+        "name": "mcp_server",
+        "type": "mcp_protocol",
+        "entrypoint": "mcp-server/server.py",
+        "alternative_entrypoint": "python launch_server.py",
+        "port": null,
+        "health_endpoint": null,
+        "description": "Claude Desktop integration for conversational data analysis",
+        "startup_command": "python launch_server.py"
+      },
+      {
+        "name": "dashboard_ui",
+        "type": "react_spa",
+        "entrypoint": "dashboard-ui/",
+        "port": 3000,
+        "health_endpoint": null,
+        "description": "React-based real-time monitoring interface",
+        "startup_command": "cd dashboard-ui && npm run dev"
+      }
+    ],
+    "infrastructure": [
+      {
+        "name": "mongodb",
+        "type": "database",
+        "startup_command": "docker-compose up -d mongodb",
+        "required_by": [
+          "master_orchestrator"
+        ],
+        "purpose": "Run persistence, task history"
+      },
+      {
+        "name": "redis",
+        "type": "cache",
+        "startup_command": "docker-compose up -d redis",
+        "required_by": [
+          "all_agents"
+        ],
+        "purpose": "Caching, distributed locks, translation queue"
+      },
+      {
+        "name": "kafka",
+        "type": "message_queue",
+        "startup_command": "docker-compose up -d kafka",
+        "required_by": [
+          "master_orchestrator",
+          "dashboard"
+        ],
+        "purpose": "Event streaming, task routing"
+      },
+      {
+        "name": "nginx",
+        "type": "reverse_proxy",
+        "startup_command": "docker-compose up -d nginx",
+        "required_by": [
+          "production_deployment"
+        ],
+        "purpose": "Load balancing, reverse proxy",
+        "optional": true
+      }
+    ],
+    "docker_deployment": [
+      {
+        "name": "full_stack",
+        "compose_file": "mcp-server/docker-compose.yml",
+        "startup_command": "cd mcp-server && docker-compose up -d",
+        "description": "Full multi-service deployment with infrastructure"
+      },
+      {
+        "name": "local_development",
+        "compose_file": "mcp-server/docker-compose.local.yml",
+        "startup_command": "cd mcp-server && docker-compose -f docker-compose.local.yml up -d",
+        "description": "Local development variant"
+      },
+      {
+        "name": "production",
+        "script": "mcp-server/production_deployment.py",
+        "startup_command": "python production_deployment.py",
+        "description": "Production-ready deployment with monitoring"
+      }
+    ],
+    "scripts": [
+      {
+        "name": "install_orchestrator",
+        "path": "mcp-server/install_orchestrator.py",
+        "purpose": "Setup dependencies, create directories, verify infrastructure",
+        "command": "python install_orchestrator.py"
+      },
+      {
+        "name": "production_deployment",
+        "path": "mcp-server/production_deployment.py",
+        "purpose": "Production-ready deployment with monitoring",
+        "command": "python production_deployment.py"
+      },
+      {
+        "name": "connectivity_tester",
+        "path": "mcp-server/connectivity_tester.py",
+        "purpose": "Test inter-service connectivity",
+        "command": "python connectivity_tester.py"
+      },
+      {
+        "name": "verify_setup",
+        "path": "mcp-server/verify_setup.py",
+        "purpose": "Verify Python dependencies and configuration",
+        "command": "python verify_setup.py"
+      },
+      {
+        "name": "bug_hunter",
+        "path": "mcp-server/bug_hunter.py",
+        "purpose": "Diagnostic tool for troubleshooting",
+        "command": "python bug_hunter.py"
+      }
+    ]
+  },
+  "data_flow": {
+    "entry_point": "master_orchestrator:8000",
+    "event_bus": "kafka",
+    "storage": [
+      {
+        "type": "mongodb",
+        "database": "deepline",
+        "collections": [
+          "workflow_runs",
+          "task_status",
+          "artifacts_metadata"
+        ]
+      },
+      {
+        "type": "redis",
+        "purpose": [
+          "caching",
+          "distributed_locks",
+          "translation_queue"
+        ],
+        "queue_name": "translation:q"
+      },
+      {
+        "type": "mlflow",
+        "path": "mcp-server/mlruns/",
+        "purpose": [
+          "experiment_tracking",
+          "model_registry"
+        ]
+      },
+      {
+        "type": "filesystem",
+        "paths": [
+          {
+            "path": "artifacts/",
+            "purpose": "workflow_artifacts_reports_visualizations"
+          },
+          {
+            "path": "snapshots/",
+            "purpose": "data_versioning"
+          },
+          {
+            "path": "mcp-server/data_sources/",
+            "purpose": "uploaded_datasets"
+          }
+        ]
+      }
+    ]
+  },
+  "configuration": {
+    "primary": "mcp-server/config.yaml",
+    "environment": ".env",
+    "claude_integration": "claude_desktop_config.json",
+    "key_settings": {
+      "max_concurrent_workflows": 1,
+      "max_rows_processed": 100000,
+      "correlation_sample_size": 10000,
+      "deadlock_check_interval_s": 60,
+      "task_timeout_s": 600,
+      "workflow_timeout_s": 3600
+    }
+  },
+  "risk_summary": {
+    "high": {
+      "count": 1,
+      "features": [
+        "model-training-evaluation"
+      ],
+      "mitigation": "Resource quotas, GPU/CPU agent routing"
+    },
+    "medium": {
+      "count": 5,
+      "features": [
+        "dataset-upload-load",
+        "exploratory-data-analysis",
+        "feature-engineering",
+        "workflow-orchestration",
+        "realtime-observability"
+      ],
+      "mitigation": "Health checks, deadlock monitoring, graceful cancellation, SLA monitoring"
+    },
+    "low": {
+      "count": 1,
+      "features": [
+        "data-quality-validation"
+      ],
+      "mitigation": "Read-only operations, comprehensive validation"
+    }
+  },
+  "assumptions": {
+    "confidence_level": "high",
+    "uncertainty_percentage": 15,
+    "list": [
+      "Primary use case: Data scientists performing end-to-end analysis workflows via API/UI",
+      "Deployment target: Single-node or small-cluster deployment with Docker Compose",
+      "Data scale: Datasets up to 100k rows (configurable)",
+      "Concurrency: 1 workflow at a time (configurable)",
+      "Authentication: Development mode - production deployment includes API key support"
+    ]
+  },
+  "uncertainties": [
+    {
+      "item": "Missing Mission Definition Module",
+      "details": "Mentioned in COMPREHENSIVE_SYSTEM_AUDIT_REPORT.md but no implementation found",
+      "impact": "low"
+    },
+    {
+      "item": "Data Governance Implementation",
+      "details": "Configuration exists but enforcement unclear",
+      "impact": "medium"
+    },
+    {
+      "item": "Kafka/MongoDB fallback behavior",
+      "details": "System continues with reduced functionality per CONNECTIVITY_TEST_REPORT.md",
+      "impact": "low"
+    },
+    {
+      "item": "Multi-tenant support",
+      "details": "Not implemented; roadmap item per README.md",
+      "impact": "medium"
+    },
+    {
+      "item": "Hybrid API translation",
+      "details": "LLM integration references Claude/Llama2 but implementation incomplete",
+      "impact": "medium"
+    }
+  ],
+  "metadata": {
+    "generated_date": "2025-10-13",
+    "generator": "A0 Purpose & Surface Mapper",
+    "repository_version": "2.1.0",
+    "last_updated": "January 2024"
+  }
+}
