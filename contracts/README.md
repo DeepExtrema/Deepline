@@ -60,22 +60,22 @@ OpenAPI 3.0.3 specification documenting all REST API endpoints across the micros
 - **EDA Agent** (port 8001): 8 endpoints
 - **Refinery Agent** (port 8005): 3 endpoints
 - **ML Agent** (port 8002): 5 endpoints
-- **Total:** 25+ endpoints documented
+- **Total:** 27 endpoints documented
 
 **Key Endpoints:**
 
-| Service | Endpoint | Method | Purpose |
-|---------|----------|--------|---------|
-| Orchestrator | `/workflows/start` | POST | Start new workflow |
-| Orchestrator | `/datasets/upload` | POST | Upload dataset |
-| Orchestrator | `/runs/{run_id}/status` | GET | Get run status |
-| EDA | `/load_data` | POST | Load dataset into memory |
-| EDA | `/basic_info` | POST | Get dataset info |
-| EDA | `/statistical_summary` | POST | Compute statistics |
-| EDA | `/create_visualization` | POST | Generate charts |
-| Refinery | `/execute` | POST | Execute DQ/FE task |
-| ML | `/class_imbalance` | POST | Handle imbalance |
-| ML | `/baseline_sanity` | POST | Train baseline models |
+Service | Endpoint | Method | Purpose
+--------|----------|--------|--------
+Orchestrator | `/workflows/start` | POST | Start new workflow
+Orchestrator | `/datasets/upload` | POST | Upload dataset
+Orchestrator | `/runs/{run_id}/status` | GET | Get run status
+EDA | `/load_data` | POST | Load dataset into memory
+EDA | `/basic_info` | POST | Get dataset info
+EDA | `/statistical_summary` | POST | Compute statistics
+EDA | `/create_visualization` | POST | Generate charts
+Refinery | `/execute` | POST | Execute DQ/FE task
+ML | `/class_imbalance` | POST | Handle imbalance
+ML | `/baseline_sanity` | POST | Train baseline models
 
 **Schemas:**
 The contract defines comprehensive request/response schemas including:
