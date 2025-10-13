@@ -46,7 +46,7 @@ All required components have been implemented as per the specification.
 - Tests: logout, token expiry, multi-tab sync, remember me
 - **Status:** Ready to run (pending UI implementation)
 
-**Total Test Cases: 60** (52 listed + 8 in beforeAll/afterAll hooks)
+**Total Test Cases: 60** (6+8+7+13+8+10+8 individual tests)
 
 ### 2. Supporting Infrastructure
 

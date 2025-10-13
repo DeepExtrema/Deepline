@@ -42,7 +42,20 @@ jobs:
         run: |
           cd mcp-server
           python master_orchestrator_api.py &
-          sleep 10
+          BACKEND_PID=$!
+          echo "Waiting for backend to be ready..."
+          for i in {1..30}; do
+            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+              echo "Backend is ready!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Backend failed to start within 30 seconds"
+              exit 1
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
         env:
           JWT_SECRET_KEY: test-secret-key-for-ci
           DATABASE_URL: sqlite:///./test.db
@@ -52,7 +65,20 @@ jobs:
           cd dashboard-ui
           npm install
           npm run dev &
-          sleep 15
+          FRONTEND_PID=$!
+          echo "Waiting for frontend to be ready..."
+          for i in {1..30}; do
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+              echo "Frontend is ready!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Frontend failed to start within 30 seconds"
+              exit 1
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
         env:
           VITE_API_URL: http://localhost:8000
       
