@@ -64,9 +64,10 @@ npm test
 |------------|-------|----------|-----------------|
 | Integration Tests | 42 | ~500ms | ❌ No |
 | DSL Schema Tests | 18 | ~400ms | ❌ No |
-| Agent Endpoints Tests | ~15 | ~10-15s | ✅ Yes |
-| Workflow Endpoints Tests | ~15 | ~15-30s | ✅ Yes |
-| **Total** | **~90** | **< 2 min** | Partial |
+| Agent Endpoints Tests | 15 | ~10-15s | ✅ Yes (pending) |
+| Workflow Endpoints Tests | 15 | ~15-30s | ✅ Yes (pending) |
+| **Total (Implemented)** | **60** | **< 1 sec** | **No** |
+| **Total (With Server)** | **~90** | **< 2 min** | **Partial** |
 
 ## Environment Configuration
 
