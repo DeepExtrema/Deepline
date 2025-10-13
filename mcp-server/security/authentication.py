@@ -10,7 +10,7 @@ import jwt
 import bcrypt
 import secrets
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 from fastapi import HTTPException, status, Depends, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
@@ -86,7 +86,7 @@ class User(BaseModel):
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
-    email: str = Field(..., regex=r"^[^@]+@[^@]+\.[^@]+$")
+    email: str = Field(..., pattern=r"^[^@]+@[^@]+\.[^@]+$")
     full_name: str = Field(..., min_length=1, max_length=100)
     password: str = Field(..., min_length=8)
     role: str = Field(..., description="User role")
@@ -100,7 +100,7 @@ class Token(BaseModel):
     refresh_token: str
     token_type: str = "bearer"
     expires_in: int
-    user: Dict[str, any]
+    user: Dict[str, Any]
 
 class TokenData(BaseModel):
     username: Optional[str] = None
@@ -240,6 +240,13 @@ class AuthenticationManager:
     
     def verify_token(self, token: str) -> TokenData:
         """Verify and decode JWT token"""
+        # Check blacklist first
+        if token in self.blacklisted_tokens:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has been revoked"
+            )
+        
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             username: str = payload.get("sub")
@@ -251,23 +258,20 @@ class AuthenticationManager:
                     detail="Invalid token"
                 )
             
-            if token in self.blacklisted_tokens:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Token has been revoked"
-                )
-            
             return TokenData(
                 username=username,
                 role=role,
                 permissions=ROLES.get(role, {}).get("permissions", [])
             )
+        except HTTPException:
+            # Re-raise HTTPExceptions (like blacklist check)
+            raise
         except jwt.ExpiredSignatureError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token has expired"
             )
-        except jwt.JWTError:
+        except (jwt.DecodeError, jwt.InvalidTokenError, Exception) as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token"
