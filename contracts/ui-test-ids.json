@@ -1,0 +1,320 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UI Test IDs Contract",
+  "description": "Enumeration of screens and critical elements with data-testid attributes for E2E testing",
+  "version": "1.0.0",
+  "screens": {
+    "Header": {
+      "description": "Main navigation header with agent tabs and system status",
+      "elements": [
+        {
+          "id": "header-container",
+          "description": "Main header container",
+          "selector": "[data-testid='header-container']",
+          "required": true
+        },
+        {
+          "id": "brand-logo",
+          "description": "DEEPLINE brand logo/title",
+          "selector": "[data-testid='brand-logo']",
+          "required": true
+        },
+        {
+          "id": "nav-orchestrator",
+          "description": "Orchestrator agent navigation tab",
+          "selector": "[data-testid='nav-orchestrator']",
+          "required": true
+        },
+        {
+          "id": "nav-eda",
+          "description": "EDA agent navigation tab",
+          "selector": "[data-testid='nav-eda']",
+          "required": true
+        },
+        {
+          "id": "nav-refinery",
+          "description": "Refinery agent navigation tab",
+          "selector": "[data-testid='nav-refinery']",
+          "required": true
+        },
+        {
+          "id": "nav-ml",
+          "description": "ML agent navigation tab",
+          "selector": "[data-testid='nav-ml']",
+          "required": true
+        },
+        {
+          "id": "system-status",
+          "description": "Overall system health status indicator",
+          "selector": "[data-testid='system-status']",
+          "required": true
+        },
+        {
+          "id": "status-dot",
+          "description": "System status indicator dot",
+          "selector": "[data-testid='status-dot']",
+          "required": true
+        }
+      ]
+    },
+    "ConsolePanel": {
+      "description": "Natural language console for submitting prompts to the orchestrator",
+      "elements": [
+        {
+          "id": "console-container",
+          "description": "Console panel container",
+          "selector": "[data-testid='console-container']",
+          "required": true
+        },
+        {
+          "id": "console-header",
+          "description": "Console header with icon and title",
+          "selector": "[data-testid='console-header']",
+          "required": true
+        },
+        {
+          "id": "console-output",
+          "description": "Console output area showing command results",
+          "selector": "[data-testid='console-output']",
+          "required": true
+        },
+        {
+          "id": "console-line",
+          "description": "Individual console output line",
+          "selector": "[data-testid='console-line']",
+          "required": true
+        },
+        {
+          "id": "console-prompt",
+          "description": "Console input field for natural language prompts",
+          "selector": "[data-testid='console-prompt']",
+          "required": true
+        },
+        {
+          "id": "console-submit",
+          "description": "Console submit button",
+          "selector": "[data-testid='console-submit']",
+          "required": true
+        }
+      ]
+    },
+    "DatasetsPanel": {
+      "description": "Panel showing uploaded datasets and upload controls",
+      "elements": [
+        {
+          "id": "datasets-container",
+          "description": "Datasets panel container",
+          "selector": "[data-testid='datasets-container']",
+          "required": true
+        },
+        {
+          "id": "datasets-header",
+          "description": "Datasets header with icon and title",
+          "selector": "[data-testid='datasets-header']",
+          "required": true
+        },
+        {
+          "id": "upload-area",
+          "description": "Upload area for new datasets",
+          "selector": "[data-testid='upload-area']",
+          "required": true
+        },
+        {
+          "id": "file-upload-input",
+          "description": "Hidden file input for dataset upload",
+          "selector": "[data-testid='file-upload-input']",
+          "required": true
+        },
+        {
+          "id": "upload-button",
+          "description": "Button to trigger file upload",
+          "selector": "[data-testid='upload-button']",
+          "required": true
+        },
+        {
+          "id": "dataset-name-input",
+          "description": "Input field for dataset name",
+          "selector": "[data-testid='dataset-name-input']",
+          "required": true
+        },
+        {
+          "id": "datasets-list",
+          "description": "List of uploaded datasets",
+          "selector": "[data-testid='datasets-list']",
+          "required": true
+        },
+        {
+          "id": "dataset-row",
+          "description": "Individual dataset row in the table",
+          "selector": "[data-testid='dataset-row']",
+          "required": true
+        },
+        {
+          "id": "resource-usage",
+          "description": "System resource usage metrics section",
+          "selector": "[data-testid='resource-usage']",
+          "required": true
+        },
+        {
+          "id": "resource-metric-cpu",
+          "description": "CPU usage metric",
+          "selector": "[data-testid='resource-metric-cpu']",
+          "required": true
+        },
+        {
+          "id": "resource-metric-memory",
+          "description": "Memory usage metric",
+          "selector": "[data-testid='resource-metric-memory']",
+          "required": true
+        }
+      ]
+    },
+    "WorkflowsPanel": {
+      "description": "Panel displaying active and completed workflows",
+      "elements": [
+        {
+          "id": "workflows-container",
+          "description": "Workflows panel container",
+          "selector": "[data-testid='workflows-container']",
+          "required": true
+        },
+        {
+          "id": "workflows-header",
+          "description": "Workflows header with icon and title",
+          "selector": "[data-testid='workflows-header']",
+          "required": true
+        },
+        {
+          "id": "workflow-card",
+          "description": "Individual workflow card",
+          "selector": "[data-testid='workflow-card']",
+          "required": true
+        },
+        {
+          "id": "workflow-id",
+          "description": "Workflow identifier",
+          "selector": "[data-testid='workflow-id']",
+          "required": true
+        },
+        {
+          "id": "workflow-status",
+          "description": "Workflow status badge",
+          "selector": "[data-testid='workflow-status']",
+          "required": true
+        },
+        {
+          "id": "workflow-name",
+          "description": "Workflow name/description",
+          "selector": "[data-testid='workflow-name']",
+          "required": true
+        },
+        {
+          "id": "workflow-progress-bar",
+          "description": "Workflow progress bar",
+          "selector": "[data-testid='workflow-progress-bar']",
+          "required": true
+        },
+        {
+          "id": "progress-text",
+          "description": "Workflow progress percentage text",
+          "selector": "[data-testid='progress-text']",
+          "required": true
+        },
+        {
+          "id": "no-workflows",
+          "description": "Empty state message when no workflows exist",
+          "selector": "[data-testid='no-workflows']",
+          "required": false
+        }
+      ]
+    },
+    "ProcessesPanel": {
+      "description": "Panel showing background processes and agent health status",
+      "elements": [
+        {
+          "id": "processes-container",
+          "description": "Processes panel container",
+          "selector": "[data-testid='processes-container']",
+          "required": true
+        },
+        {
+          "id": "processes-header",
+          "description": "Processes header with icon and title",
+          "selector": "[data-testid='processes-header']",
+          "required": true
+        },
+        {
+          "id": "process-card-orchestrator",
+          "description": "Orchestrator process card",
+          "selector": "[data-testid='process-card-orchestrator']",
+          "required": true
+        },
+        {
+          "id": "process-card-refinery",
+          "description": "Refinery process card",
+          "selector": "[data-testid='process-card-refinery']",
+          "required": true
+        },
+        {
+          "id": "process-status",
+          "description": "Process health status indicator",
+          "selector": "[data-testid='process-status']",
+          "required": true
+        },
+        {
+          "id": "process-status-dot",
+          "description": "Process status dot indicator",
+          "selector": "[data-testid='process-status-dot']",
+          "required": true
+        },
+        {
+          "id": "telemetry-section",
+          "description": "EDA telemetry section",
+          "selector": "[data-testid='telemetry-section']",
+          "required": true
+        },
+        {
+          "id": "telemetry-table",
+          "description": "EDA telemetry data table",
+          "selector": "[data-testid='telemetry-table']",
+          "required": true
+        },
+        {
+          "id": "telemetry-row",
+          "description": "Individual telemetry row",
+          "selector": "[data-testid='telemetry-row']",
+          "required": true
+        }
+      ]
+    },
+    "App": {
+      "description": "Root application container",
+      "elements": [
+        {
+          "id": "app-container",
+          "description": "Main application container",
+          "selector": "[data-testid='app-container']",
+          "required": true
+        },
+        {
+          "id": "main-layout",
+          "description": "Main layout container",
+          "selector": "[data-testid='main-layout']",
+          "required": true
+        },
+        {
+          "id": "main-content",
+          "description": "Main content area",
+          "selector": "[data-testid='main-content']",
+          "required": true
+        },
+        {
+          "id": "sidebar",
+          "description": "Sidebar container",
+          "selector": "[data-testid='sidebar']",
+          "required": true
+        }
+      ]
+    }
+  }
+}
