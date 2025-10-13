@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0%20%7C%20BUSL%201.1-green.svg)](LICENSE.md)
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)](https://github.com/DeepExtrema/Sherlock)
 [![Version](https://img.shields.io/badge/Version-2.1.0-orange.svg)](https://github.com/DeepExtrema/Sherlock/releases)
+[![CI Status](https://github.com/DeepExtrema/Sherlock-Multiagent-Data-Scientist/workflows/CI/badge.svg)](https://github.com/DeepExtrema/Sherlock-Multiagent-Data-Scientist/actions/workflows/ci.yml)
 
 **Version**: 2.1.0  
 **Status**: Production ready with deadlock monitoring and graceful cancellation support  
