@@ -146,13 +146,13 @@ describe('My Integration Test', () => {
 ### Start Services Manually
 
 ```bash
-docker-compose -f docker-compose.ci.yml up -d
+docker compose -f docker-compose.ci.yml up -d
 ```
 
 ### Check Service Health
 
 ```bash
-docker-compose -f docker-compose.ci.yml ps
+docker compose -f docker-compose.ci.yml ps
 ```
 
 All services should show "healthy" status.
@@ -178,7 +178,7 @@ npm run test:integration -- --coverage
 ### Stop Services
 
 ```bash
-docker-compose -f docker-compose.ci.yml down -v
+docker compose -f docker-compose.ci.yml down -v
 ```
 
 The `-v` flag removes volumes for a clean state.
@@ -199,7 +199,7 @@ The CI pipeline should:
 
 3. **Teardown Phase** (optional, CI usually handles this)
    ```bash
-   docker-compose -f docker-compose.ci.yml down -v
+   docker compose -f docker-compose.ci.yml down -v
    ```
 
 ### GitHub Actions Example
@@ -278,7 +278,7 @@ BASE_URL=http://localhost:3000
 
 3. Clean up old containers:
    ```bash
-   docker-compose -f docker-compose.ci.yml down -v
+   docker compose -f docker-compose.ci.yml down -v
    docker system prune -f
    ```
 
@@ -298,12 +298,12 @@ BASE_URL=http://localhost:3000
 
 1. Ensure MongoDB is healthy:
    ```bash
-   docker-compose -f docker-compose.ci.yml ps mongo-test
+   docker compose -f docker-compose.ci.yml ps mongo-test
    ```
 
 2. Check MongoDB logs:
    ```bash
-   docker-compose -f docker-compose.ci.yml logs mongo-test
+   docker compose -f docker-compose.ci.yml logs mongo-test
    ```
 
 3. Test connection manually:

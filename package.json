@@ -8,8 +8,8 @@
     "test:e2e": "playwright test --reporter=line",
     "test:integration": "vitest run",
     "test:integration:watch": "vitest watch",
-    "compose:up": "docker-compose -f docker-compose.ci.yml up -d --wait",
-    "compose:down": "docker-compose -f docker-compose.ci.yml down -v",
+    "compose:up": "docker compose -f docker-compose.ci.yml up -d --wait",
+    "compose:down": "docker compose -f docker-compose.ci.yml down -v",
     "seed:test": "tsx scripts/seed-test-env.ts",
     "playwright:install": "playwright install --with-deps chromium"
   },
