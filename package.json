@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run tests/integration tests/contracts/dsl-schema.test.ts",
+    "test:all": "vitest run",
     "test:watch": "vitest",
     "test:contracts": "vitest run tests/contracts",
     "test:integration": "vitest run tests/integration"
