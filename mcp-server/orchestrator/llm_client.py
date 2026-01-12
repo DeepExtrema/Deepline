@@ -135,7 +135,7 @@ def get_llm_client() -> LlmClient:
     """Get or create the global LLM client instance."""
     global _llm_client
     if _llm_client is None:
-        from ..config import get_config
+        from config import get_config
         config = get_config()
         _llm_client = LlmClient(
             endpoint=config.master_orchestrator.llm.endpoint,

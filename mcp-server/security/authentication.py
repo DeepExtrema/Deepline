@@ -86,7 +86,7 @@ class User(BaseModel):
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
-    email: str = Field(..., regex=r"^[^@]+@[^@]+\.[^@]+$")
+    email: str = Field(..., pattern=r"^[^@]+@[^@]+\.[^@]+$")
     full_name: str = Field(..., min_length=1, max_length=100)
     password: str = Field(..., min_length=8)
     role: str = Field(..., description="User role")

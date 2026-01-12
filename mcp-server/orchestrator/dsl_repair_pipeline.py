@@ -25,7 +25,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pydantic import ValidationError
 
 from .llm_client import call_llm
-from ..config import get_config
+from config import get_config
 from .translator import NeedsHumanError
 from .agent_registry import is_valid
 

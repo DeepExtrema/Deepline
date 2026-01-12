@@ -7,7 +7,7 @@ Exposes the agent-action matrix from configuration for UI and validation.
 
 import logging
 from typing import Dict, List, Set, Optional
-from ..config import get_config
+from config import get_config
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,6 @@ def get_agent_matrix() -> Dict[str, List[str]]:
         config = get_config()
         _agent_matrix = {
             "eda": config.master_orchestrator.agent_actions.eda,
- cursor/prepare-refinery-agent-for-rollout-8ae2
             "refinery": config.master_orchestrator.agent_actions.refinery,
             "model": config.master_orchestrator.agent_actions.model,
             "custom": config.master_orchestrator.agent_actions.custom

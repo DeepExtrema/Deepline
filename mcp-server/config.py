@@ -9,6 +9,16 @@ from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator
 from pathlib import Path
 
+class DeadlockConfig(BaseModel):
+    """Configuration for deadlock detection and monitoring."""
+
+    check_interval_s: int = 60
+    pending_stale_s: int = 900  # 15 minutes
+    workflow_stale_s: int = 3600  # 1 hour
+    cancel_on_deadlock: bool = True
+    alert_webhook: str = ""
+    max_dependency_depth: int = 50
+
 class MLAgentConfig(BaseModel):
     """Configuration for ML Agent with environment variable support."""
     

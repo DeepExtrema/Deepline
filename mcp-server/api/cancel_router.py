@@ -89,7 +89,7 @@ def create_cancel_router() -> APIRouter:
         """
         try:
             # Import here to avoid circular imports
-            from ..orchestrator.workflow_manager import cancel_workflow_internal, get_workflow_status
+            from orchestrator.workflow_manager import cancel_workflow_internal, get_workflow_status
             
             # Check if workflow exists and can be cancelled
             workflow_info = await get_workflow_status(run_id)
@@ -165,7 +165,7 @@ def create_cancel_router() -> APIRouter:
             404: Workflow not found
         """
         try:
-            from ..orchestrator.workflow_manager import get_workflow_status
+            from orchestrator.workflow_manager import get_workflow_status
             
             workflow_info = await get_workflow_status(run_id)
             if not workflow_info:
@@ -214,7 +214,7 @@ def create_cancel_router() -> APIRouter:
             List of cancelled workflow information
         """
         try:
-            from ..orchestrator.workflow_manager import list_cancelled_workflows
+            from orchestrator.workflow_manager import list_cancelled_workflows
             
             workflows = await list_cancelled_workflows(
                 limit=limit,
@@ -259,12 +259,12 @@ def create_cancel_router() -> APIRouter:
             409: Workflow not in cancelling state
         """
         try:
-            from ..orchestrator.workflow_manager import force_complete_cancellation
+            from orchestrator.workflow_manager import force_complete_cancellation
             
             success = await force_complete_cancellation(run_id)
             if not success:
                 # Check if workflow exists
-                from ..orchestrator.workflow_manager import get_workflow_status
+                from orchestrator.workflow_manager import get_workflow_status
                 workflow_info = await get_workflow_status(run_id)
                 
                 if not workflow_info:

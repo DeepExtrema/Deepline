@@ -1054,7 +1054,7 @@ async def cancel_workflow_internal(run_id: str, reason: str = "system",
     """
     try:
         # Import here to avoid circular imports
-        from ..config import get_config
+        from config import get_config
         config = get_config()
         
         # Create a temporary workflow manager instance
@@ -1068,7 +1068,7 @@ async def cancel_workflow_internal(run_id: str, reason: str = "system",
 async def get_workflow_status(run_id: str) -> Optional[Dict[str, Any]]:
     """Module-level function for getting workflow status."""
     try:
-        from ..config import get_config
+        from config import get_config
         config = get_config()
         
         manager = WorkflowManager(config.master_orchestrator.infrastructure.dict())
@@ -1082,7 +1082,7 @@ async def list_cancelled_workflows(limit: int = 50, offset: int = 0,
                                  client_id: Optional[str] = None) -> List[Dict[str, Any]]:
     """Module-level function for listing cancelled workflows."""
     try:
-        from ..config import get_config
+        from config import get_config
         config = get_config()
         
         manager = WorkflowManager(config.master_orchestrator.infrastructure.dict())
@@ -1095,7 +1095,7 @@ async def list_cancelled_workflows(limit: int = 50, offset: int = 0,
 async def force_complete_cancellation(run_id: str) -> bool:
     """Module-level function for force completing cancellation."""
     try:
-        from ..config import get_config
+        from config import get_config
         config = get_config()
         
         manager = WorkflowManager(config.master_orchestrator.infrastructure.dict())

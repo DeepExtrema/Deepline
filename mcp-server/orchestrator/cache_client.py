@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import asyncio
 
 try:
-    import aioredis
+    import redis.asyncio as aioredis
     REDIS_AVAILABLE = True
 except ImportError:
     REDIS_AVAILABLE = False

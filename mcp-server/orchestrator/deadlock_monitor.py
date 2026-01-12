@@ -25,7 +25,7 @@ try:
 except ImportError:
     HTTPX_AVAILABLE = False
 
-from ..config import DeadlockConfig
+from config import DeadlockConfig
 
 logger = logging.getLogger(__name__)
 

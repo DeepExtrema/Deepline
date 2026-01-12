@@ -10,7 +10,7 @@ from typing import Dict, Any, List
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
-from ..orchestrator.agent_registry import (
+from orchestrator.agent_registry import (
     get_agent_matrix, get_agent_names, get_agent_actions,
     get_agent_stats, is_valid_agent, is_valid_action
 )
